@@ -36,7 +36,7 @@ server.register([
 ```
 
 #### Options
-All options `(defaultRate, rateLimitKey, redisClient, overLimitError)` are required for the plugin to work properly.
+The first four options `(defaultRate, rateLimitKey, redisClient, overLimitError)` are required for the plugin to work properly.
 
 Rate-limiting is by default disabled on all routes, unless `enabled=true` in the route plugin [settings](#custom-rate).
 
@@ -52,13 +52,26 @@ Function that accepts a `Request` object and returns:
 This is used if there is no `rate` function defined in the route plugin [settings](#custom-rate).
 
 ##### `rateLimitKey`
-A function that returns a key for an given request. This can be any differentiating value in each request, such as an API Key, IP Address, etc
+A function that returns a key for an given request. This can be any differentiating value in each request, such as an API Key, IP Address, etc.
 
 ##### `redisClient`
-A promisified redis client
+A promisified redis client.
 
 ##### `overLimitError`
 A function that is called when the rate limit is exceeded. It must return an error. It is called with an object `rate` that contains information about the current state of the request rate.
+
+##### `methods`
+The default list of HTTP methods that are examined. The default is:
+```
+[ 'get', 'post', 'delete' ]
+```
+You might prefer:
+```
+[ 'get', 'post', 'delete', 'put', 'patch' ]
+```
+
+##### `enabled`
+If set to `true` in the options, then all routes are subject to rate-limiting.
 
 ## Managing Routes
 Settings for individual routes can be set while registering a route.
@@ -96,7 +109,8 @@ To enable rate-limiting for a route, `enabled` must be `true` in the route plugi
 
 #### Disable Rate-Limiting for route
 
-If `plugins.rateLimit` is not defined, rate-limiting is disabled for that route.
+If `plugins.rateLimit` is not defined, rate-limiting is disabled for that route
+(unless `options.enabled` is `true` when the plugin is registered).
 
 ```
 server.route([{
